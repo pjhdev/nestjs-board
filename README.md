@@ -41,7 +41,16 @@ $ docker-compose up -d
 - [x] 게시물 또는 댓글 등록시 알림 기능 구현
 - [x] DB 스키마 생성 스크립트
 
-## API 명세
+## Migration script
+> app/src/migrations 경로에 DB 스키마 생성 스크립트가 있습니다.
+* 1661839963706-init-schema.ts
+  * DB 초기 스키마 생성 스크립트입니다.
+* 1661839963707-keyword-seeding.ts
+  * keyword 테이블에 시드 데이터를 생성하는 스크립트입니다.
+* 1661839963708-board-seeding.ts
+  * board 테이블에 시드 데이터를 생성하는 스크립트입니다.
+
+## API specification
 
 ### 1. 게시글 목록 API
 
