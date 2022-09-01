@@ -11,6 +11,8 @@ import { Comment } from '../../comment/entities/comment.entity';
 import * as bcrypt from 'bcryptjs';
 import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { CustomException } from "../../shared/exceptions/custom.exception";
+import { InternalErrorCode } from "../../shared/exceptions/internal-error-code.enum";
 
 @Entity()
 export class Board extends BaseEntity<Board> {
@@ -33,7 +35,9 @@ export class Board extends BaseEntity<Board> {
   @Column({ type: 'text', nullable: false, select: false })
   password: string;
 
-  @OneToMany(() => Comment, (comment) => comment.board)
+  @OneToMany(() => Comment, (comment) => comment.board, {
+    cascade: true,
+  })
   comments: Promise<Comment[]>;
 
   @ApiProperty()
@@ -44,5 +48,14 @@ export class Board extends BaseEntity<Board> {
   async setPassword() {
     const salt = await bcrypt.genSalt();
     this.password = await bcrypt.hash(this.password, salt);
+  }
+
+  async validatePassword(saltedPassword: string): Promise<void> {
+    if (!(await bcrypt.compare(saltedPassword, this.password))) {
+      throw new CustomException({
+        errorCode: InternalErrorCode.BOARD_PASSWORD_MISMATCH,
+        errorMessage: 'BOARD_PASSWORD_MISMATCH',
+      });
+    }
   }
 }

@@ -4,7 +4,6 @@ import { UpdateBoardDto } from './dto/update-board.dto';
 import { BoardRepository } from './board.repository';
 import { Board } from './entities/board.entity';
 import { KeywordRepository } from '../keyword/keyword.repository';
-import * as bcrypt from 'bcryptjs';
 import { FindAllBoardDto } from './dto/find-all-board.dto';
 import { BoardDto } from './dto/board.dto';
 import { InternalErrorCode } from '../shared/exceptions/internal-error-code.enum';
@@ -54,12 +53,7 @@ export class BoardService {
       });
     }
 
-    if (!(await bcrypt.compare(updateBoardDto.password, board.password))) {
-      throw new CustomException({
-        errorCode: InternalErrorCode.BOARD_PASSWORD_MISMATCH,
-        errorMessage: 'BOARD_PASSWORD_MISMATCH',
-      });
-    }
+    await board.validatePassword(updateBoardDto.password);
 
     if (board.content != updateBoardDto.content) {
       board.content = updateBoardDto.content;
@@ -81,12 +75,7 @@ export class BoardService {
       });
     }
 
-    if (!(await bcrypt.compare(removeBoardDto.password, board.password))) {
-      throw new CustomException({
-        errorCode: InternalErrorCode.BOARD_PASSWORD_MISMATCH,
-        errorMessage: 'BOARD_PASSWORD_MISMATCH',
-      });
-    }
+    await board.validatePassword(removeBoardDto.password);
 
     await this.boardRepository.remove(board);
   }

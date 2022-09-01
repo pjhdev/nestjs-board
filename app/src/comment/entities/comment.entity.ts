@@ -15,6 +15,8 @@ export class Comment extends BaseEntity<Comment> {
   @Column({ type: 'bigint', nullable: false })
   parent: number;
 
-  @ManyToOne(() => Board, (board) => board.comments)
+  @ManyToOne(() => Board, (board) => board.comments, {
+    onDelete: 'CASCADE'
+  })
   board: Promise<Board>;
 }

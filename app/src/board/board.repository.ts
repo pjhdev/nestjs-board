@@ -42,12 +42,15 @@ export class BoardRepository extends Repository<Board> {
   }
 
   async findOneWithPasswordColumn(id: number): Promise<Board> {
-    return await this.createQueryBuilder()
+    const foundBoard = await this.createQueryBuilder()
       .select(['id', 'title', 'content', 'author'])
       .addSelect('created_at', 'createdAt')
       .addSelect('updated_at', 'updatedAt')
       .addSelect('password')
       .where('id=:id', { id: id })
       .getRawOne();
+
+    // getRawOne 으로 가져오는 결과는 json 데이터이기 때문에 Board entity 로 다시 변경해준다.
+    return new Board(foundBoard);
   }
 }
